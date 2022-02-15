@@ -118,6 +118,7 @@ class RobotPost(object):
         self.LOG = ''
         self.nAxes = robot_axes
         self.RDK = Robolink()
+        self.RDK._setTimeout(1000) # seconds
 
     def ProgStart(self, progname):
         """Start a new program given a name. Multiple programs can be generated at the same times.
@@ -178,7 +179,7 @@ class RobotPost(object):
         :type show_result: bool, str
         """
     
-        full_progname = f'{time.time_ns()}_' + progname + '.' + self.PROG_EXT
+        full_progname = progname + '.' + self.PROG_EXT
         if ask_user or not DirExists(folder):
             filesave = getSaveFile(folder, full_progname, 'Save program as...')
             if filesave is not None:
@@ -217,6 +218,8 @@ class RobotPost(object):
         ###############################################################        
         # Replay path
         # flags=4 because we want to get trajectory with constant time interval between trajectory points
+        # self.RDK.ShowMessage(f'before')
+
         message, traj, status = program.InstructionListJoints(flags=4, time_step=0.01)
         if status < 0:
             self.RDK.ShowMessage(f'Failed to generate valid trajectory.\nMessage: {message}\nStatus: {status}')
